@@ -1,0 +1,7 @@
+- id: stable_po
+  name: Stable PO files
+  entry: stabilise_po
+  language: python
+  files: \.(po|pot)$
+  description: This uses pybabel to regenerate PO files using settings that are reproducable
+  stages: [commit]
