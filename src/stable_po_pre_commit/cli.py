@@ -1,3 +1,4 @@
+import glob
 from os import rename
 import os.path
 import time
@@ -7,6 +8,12 @@ from babel.messages import frontend
 
 CommandLineInterface = frontend.CommandLineInterface
 
+HEADER = """
+msgid ""
+msgstr ""
+
+"""
+
 
 def skipping_rename(*args, **kwargs):
     """If something has already moved the file out of the way then babel assumes it's on windows and does a non-atomic
@@ -15,6 +22,15 @@ def skipping_rename(*args, **kwargs):
         return rename(*args, **kwargs)
     except FileNotFoundError:
         return
+
+
+def readd_header(po_path):
+    with open(po_path, "r+", encoding="utf-8") as po_file:
+        original_data = po_file.read()
+        po_file.seek(0)
+        po_file.write(HEADER)
+        po_file.write(original_data)
+
 
 @click.command()
 @click.argument("files", nargs=-1)
@@ -57,8 +73,8 @@ def main(
             "pybabel",
             "update",
             "--ignore-obsolete",
-            "--omit-header",
             "--no-wrap",
+            "--omit-header",
             "--no-fuzzy-matching",
             "-i",
             output_file,
@@ -68,3 +84,7 @@ def main(
         print(args)
         cli = CommandLineInterface()
         cli.run(args)
+
+    # Add blank header to prevent being seen as fuzzy
+    for po_path in glob.glob(f"{translations_dir}/**/*.po", recursive=True):
+        readd_header(po_path)

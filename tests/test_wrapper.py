@@ -87,23 +87,24 @@ def test_output_location_passed(mocked_babel, runner):
     ]
 
     called_args = mocked_calls[1].args[0]
-    assert called_args == ['pybabel',
- 'update',
- '--ignore-obsolete',
- '--omit-header',
- '--no-wrap',
- '--no-fuzzy-matching',
- '-i',
- 'output',
- '-d',
- '/pool/rps/stable_po_pre_commit/tests/translations']
+    assert called_args == [
+        "pybabel",
+        "update",
+        "--ignore-obsolete",
+        "--omit-header",
+        "--no-wrap",
+        "--no-fuzzy-matching",
+        "-i",
+        "output",
+        "-d",
+        "/pool/rps/stable_po_pre_commit/tests/translations",
+    ]
 
     assert result.exit_code == 0
 
 
 def test_mapping_file_passed(mocked_babel, runner):
     result = runner.invoke(main, ["-F", "mapping"])
-
 
     mocked_calls = mocked_babel.return_value.run.mock_calls
     assert len(mocked_calls) == 1
